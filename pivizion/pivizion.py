@@ -1,6 +1,8 @@
 import os
 import io
 
+
+from playsound import playsound
 from google.cloud import vision, texttospeech
 from google.cloud.vision import types
 
@@ -16,7 +18,27 @@ else:
 
 
 class PiVizion(object):
+
+    def visualize(self):
+        """
+        Process for visualizing an image.
+        - Captures image, analyzes image for labels and text,
+        creates audio of image analysis, plays audio file.
+        """
+        image_name = self.get_image()
+        result = self.analyze_image(image_name)
+        text = f"{result['labels'][0].description if result['labels'] else 'No labels'}\n{result['texts'][0].description if result['texts'] else 'No Text'}"
+        print(text)
+        self.speak(text)
+
+
     def get_image(self):
+        """
+        Captures an image to a file, returns the image filename.
+        Returns image file name.
+        """
+        image_name = "image.jpg"
+
         if is_pi:
             print("Pi cam")
         else:
@@ -28,52 +50,67 @@ class PiVizion(object):
                 # imshow("cam-test", img)
                 # waitKey(0)
                 # destroyWindow("cam-test")
-                imwrite("filename.jpg", img)
+                imwrite(image_name, img)
+                print('image written')
+
+        return image_name
 
 
-    def detect_image(self):
-        client = vision.ImageAnnotatorClient()
+    def analyze_image(self, image_name=None):
+        """
+        Analyzes an image using google cloud api.
+        Returns a dictionary with resolved labels and text for the image.
+        """
+        if image_name:
+            client = vision.ImageAnnotatorClient()
 
-        file_name = "filename.jpg"
+            with io.open(image_name, 'rb') as image_file:
+                content = image_file.read()
 
-        with io.open(file_name, 'rb') as image_file:
-            content = image_file.read()
+            image = types.Image(content=content)
 
-        image = types.Image(content=content)
+            labels_response = client.label_detection(image=image)
+            labels = labels_response.label_annotations
 
-        labels_response = client.label_detection(image=image)
-        labels = labels_response.label_annotations
+            text_response = client.text_detection(image=image)
+            texts = text_response.text_annotations
 
-        text_response = client.text_detection(image=image)
-        texts = text_response.text_annotations
+            if labels:
+                print(f'Labels: {labels[0].description}')
+            if texts:
+                print(f'Text: {texts[0].description}')
 
-        print('Labels: ')
-        print(labels[0].description)
-
-        print('Text: ')
-        print(texts[0].description)
+            return {'labels' : labels, 'texts' : texts}
 
 
-    def speak(self):
-        client = texttospeech.TextToSpeechClient()
+    def speak(self, text=None):
+        """
+        Creates audio file using google text to speech of the given text.
+        """
+        audio_out_name = 'out.mp3'
 
-        synthesis_input = texttospeech.types.SynthesisInput(text="Hello")
+        if text:
+            client = texttospeech.TextToSpeechClient()
 
-        voice = texttospeech.types.VoiceSelectionParams(
-            language_code='en-US',
-            ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+            synthesis_input = texttospeech.types.SynthesisInput(text=text)
 
-        audio_config = texttospeech.types.AudioConfig(
-            audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+            voice = texttospeech.types.VoiceSelectionParams(
+                language_code='en-US',
+                ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
 
-        response = client.synthesize_speech(synthesis_input, voice, audio_config)
+            audio_config = texttospeech.types.AudioConfig(
+                audio_encoding=texttospeech.enums.AudioEncoding.MP3)
 
-        with open('output.mp3', 'wb') as out:
-            out.write(response.audio_content)
-            print("Audio written to file.")
+            response = client.synthesize_speech(synthesis_input, voice, audio_config)
+
+            with open(audio_out_name, 'wb') as out:
+                out.write(response.audio_content)
+                print("Audio written to file.")
+
+            playsound(audio_out_name)
+
+
 
 
 test = PiVizion()
-#test.get_image()
-#test.detect_image()
-test.speak()
+test.visualize()
