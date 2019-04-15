@@ -31,7 +31,7 @@ class PiVizion(object):
                 imwrite("filename.jpg", img)
 
 
-    def detect_labels(self):
+    def detect_image(self):
         client = vision.ImageAnnotatorClient()
 
         file_name = "filename.jpg"
@@ -54,6 +54,26 @@ class PiVizion(object):
         print(texts[0].description)
 
 
+    def speak(self):
+        client = texttospeech.TextToSpeechClient()
+
+        synthesis_input = texttospeech.types.SynthesisInput(text="Hello")
+
+        voice = texttospeech.types.VoiceSelectionParams(
+            language_code='en-US',
+            ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+
+        audio_config = texttospeech.types.AudioConfig(
+            audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+
+        response = client.synthesize_speech(synthesis_input, voice, audio_config)
+
+        with open('output.mp3', 'wb') as out:
+            out.write(response.audio_content)
+            print("Audio written to file.")
+
+
 test = PiVizion()
 #test.get_image()
-test.detect_labels()
+#test.detect_image()
+test.speak()
