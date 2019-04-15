@@ -1,1 +1,4 @@
 wheel>=0.22
+google-cloud-vision
+google-cloud-texttospeech
+opencv-python
