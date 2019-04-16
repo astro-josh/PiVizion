@@ -24,7 +24,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='pivizion',
     version='0.1.0',
-    description='Python package for an image recognition system using Google Cloud Vision and Text to speech.',
+    description='Python package for image recognition using Google Cloud Vision and Text to speech.',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Joshua Alexander',
     author_email='itzjoshy8@gmail.com',
@@ -48,4 +48,9 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
+    entry_points = {
+      'console_scripts': [
+          'pivizion = pivizion.pivizion:main',
+      ]
+    },
 )

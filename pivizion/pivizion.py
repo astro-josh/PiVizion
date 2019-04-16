@@ -1,7 +1,6 @@
 import os
 import io
 
-
 from playsound import playsound
 from google.cloud import vision, texttospeech
 from google.cloud.vision import types
@@ -110,7 +109,10 @@ class PiVizion(object):
             playsound(audio_out_name)
 
 
+def main():
+    test = PiVizion()
+    test.visualize()
 
 
-test = PiVizion()
-test.visualize()
+if (__name__ == '__main__'):
+    main()
