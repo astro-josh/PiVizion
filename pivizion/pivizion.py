@@ -17,7 +17,6 @@ else:
 
 
 class PiVizion(object):
-
     def visualize(self):
         """
         Process for visualizing an image.

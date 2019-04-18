@@ -2,11 +2,6 @@
 PiVizion
 =============================
 
-.. image:: https://badge.fury.io/py/pivizion.png
-    :target: http://badge.fury.io/py/pivizion
-
-.. image:: https://travis-ci.org/obviousrebel/pivizion.png?branch=master
-    :target: https://travis-ci.org/obviousrebel/pivizion
 
 Python package for an image recognition system using Google Cloud Vision and Text to speech.
 
@@ -14,5 +9,5 @@ Python package for an image recognition system using Google Cloud Vision and Tex
 Features
 --------
 
-* TODO
-
+To use, must have Google Cloud API and credentials configured for access to Vision and texttospeech APIs.
+Not responsible for any Google Cloud charges that may occur from use of this software.
