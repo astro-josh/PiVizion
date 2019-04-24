@@ -1,19 +1,29 @@
 import os
 import io
+import logging
 
 from playsound import playsound
 from google.cloud import vision, texttospeech
 from google.cloud.vision import types
 
-global is_pi
 
-print(os.uname().sysname)
+global is_pi
 if os.uname().sysname == 'raspberrypi':
     import picamera
     is_pi = True
 else:
     from cv2 import *
     is_pi = False
+
+
+logger = logging.getLogger(__name__)
+def init_logger():
+    """
+    Initialize logger.
+    """
+    logger.setLevel(logging.INFO)
+    logging.basicConfig(filename='pivizion.log')
+    logging.captureWarnings(True)
 
 
 class PiVizion(object):
@@ -23,10 +33,11 @@ class PiVizion(object):
         - Captures image, analyzes image for labels and text,
         creates audio of image analysis, plays audio file.
         """
+        init_logger()
         image_name = self.get_image()
         result = self.analyze_image(image_name)
         text = f"{result['labels'][0].description if result['labels'] else 'No labels'}\n{result['texts'][0].description if result['texts'] else 'No Text'}"
-        print(text)
+        logger.info(f"Generated Text:\n{text}")
         self.speak(text)
 
 
@@ -49,8 +60,8 @@ class PiVizion(object):
                 # waitKey(0)
                 # destroyWindow("cam-test")
                 imwrite(image_name, img)
-                print('image written')
 
+        logger.info(f"Image Captured and saved as {image_name}")
         return image_name
 
 
@@ -74,9 +85,9 @@ class PiVizion(object):
             texts = text_response.text_annotations
 
             if labels:
-                print(f'Labels: {labels[0].description}')
+                logger.info(f'Labels: {labels[0].description}')
             if texts:
-                print(f'Text: {texts[0].description}')
+                logger.info(f'Text: {texts[0].description}')
 
             return {'labels' : labels, 'texts' : texts}
 
@@ -103,7 +114,7 @@ class PiVizion(object):
 
             with open(audio_out_name, 'wb') as out:
                 out.write(response.audio_content)
-                print("Audio written to file.")
+                logger.info(f"Audio written to {audio_out_name}")
 
             playsound(audio_out_name)
 
