@@ -1,6 +1,7 @@
 import os
 import io
 import logging
+import datetime
 
 from playsound import playsound
 from google.cloud import vision, texttospeech
@@ -34,6 +35,9 @@ class PiVizion(object):
         creates audio of image analysis, plays audio file.
         """
         init_logger()
+        currentDT = datetime.datetime.now().strftime('%a, %b %d, %Y - %I:%M:%S %p')
+        logger.info("Visualize Action Triggered at {currentDT}")
+
         image_name = self.get_image()
         result = self.analyze_image(image_name)
         text = f"{result['labels'][0].description if result['labels'] else 'No labels'}\n{result['texts'][0].description if result['texts'] else 'No Text'}"
@@ -120,6 +124,7 @@ class PiVizion(object):
 
 
 def main():
+    # TODO: add button press event to call visualize
     test = PiVizion()
     test.visualize()
 
