@@ -3,6 +3,9 @@
 *.jpeg
 *.mp3
 
+# Log files
+*.log
+
 *.py[cod]
 
 # C extensions
