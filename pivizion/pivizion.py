@@ -10,7 +10,7 @@ from google.cloud.vision import types
 
 global is_pi
 if os.uname().sysname == 'raspberrypi':
-    import picamera
+    from picamera import PiCamera
     is_pi = True
 else:
     from cv2 import *
@@ -53,8 +53,13 @@ class PiVizion(object):
         image_name = "image.jpg"
 
         if is_pi:
-            print("Pi cam")
+            logger.info("Running on raspberrypi, using PiCamera.")
+            camera = PiCamera()
+            camera.resolution = (1024, 768)
+            camera.start_preview()
+            camera.capture(image_name)
         else:
+            logger.info("Running on Non-pi system, using openCV.")
             cam = VideoCapture(0)
             s, img = cam.read()
 
