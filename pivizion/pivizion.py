@@ -2,6 +2,7 @@ import os
 import io
 import logging
 import datetime
+import configparser
 
 from playsound import playsound
 from google.cloud import vision, texttospeech
@@ -128,10 +129,29 @@ class PiVizion(object):
             playsound(audio_out_name)
 
 
+def parse_config():
+    valid_voice_genders = ("FEMALE", "MALE", "NEUTRAL")
+    valid_voice_lang = ()
+
+    config = configparser.ConfigParser()
+    config.read('../setup.cfg')
+
+    if 'pivizion' in config:
+        settings = config['pivizion']
+        parsed_settings = dict(
+            text_recognition = settings.getboolean('text_recognition'),
+            label_recognition = settings.getboolean('label_recognition'),
+            voice_gender = settings['voice_gender'].upper(),
+            voice_lang = settings['voice_lang']
+        )
+        print(parsed_settings)
+
+
 def main():
     # TODO: add button press event to call visualize
-    test = PiVizion()
-    test.visualize()
+    #test = PiVizion()
+    #test.visualize()
+    parse_config()
 
 
 if (__name__ == '__main__'):
