@@ -131,7 +131,7 @@ class PiVizion(object):
 
 def parse_config():
     valid_voice_genders = ("FEMALE", "MALE", "NEUTRAL")
-    valid_voice_lang = ()
+    valid_voice_langs = ("en-US")
 
     config = configparser.ConfigParser()
     config.read('../setup.cfg')
@@ -139,10 +139,10 @@ def parse_config():
     if 'pivizion' in config:
         settings = config['pivizion']
         parsed_settings = dict(
-            text_recognition = settings.getboolean('text_recognition'),
-            label_recognition = settings.getboolean('label_recognition'),
-            voice_gender = settings['voice_gender'].upper(),
-            voice_lang = settings['voice_lang']
+            text_recognition = settings.getboolean('text_recognition', fallback=True),
+            label_recognition = settings.getboolean('label_recognition', fallback=True),
+            voice_gender = settings.get('voice_gender', fallback='FEMALE').upper(),
+            voice_lang = settings.get('voice_lang', fallback='en-US')
         )
         print(parsed_settings)
 
