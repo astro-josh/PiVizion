@@ -131,12 +131,17 @@ class PiVizion(object):
             playsound(audio_out_name)
 
 
-def parse_config():
+def parse_config(filename=None):
+    """
+    Parse and validate config settings from a file.
+    """
     valid_voice_genders = ("FEMALE", "MALE", "NEUTRAL")
     valid_voice_langs = ("en-US", "en-UK")
 
     config = configparser.ConfigParser()
-    config.read('../setup.cfg')
+    if not filename:
+        filename = "../setup.cfg"
+    config.read(filename)
 
     if 'pivizion' in config:
         settings = config['pivizion']
@@ -157,6 +162,7 @@ def parse_config():
             parsed_settings['voice_lang'] = valid_voice_langs[0]
 
         logger.info(f"Added configuration settings from config file.\n{parsed_settings}")
+
 
 def main():
     init_logger()
