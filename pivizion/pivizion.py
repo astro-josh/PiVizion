@@ -131,7 +131,7 @@ class PiVizion(object):
 
 def parse_config():
     valid_voice_genders = ("FEMALE", "MALE", "NEUTRAL")
-    valid_voice_langs = ("en-US")
+    valid_voice_langs = ("en-US", "en-UK")
 
     config = configparser.ConfigParser()
     config.read('../setup.cfg')
@@ -144,8 +144,17 @@ def parse_config():
             voice_gender = settings.get('voice_gender', fallback='FEMALE').upper(),
             voice_lang = settings.get('voice_lang', fallback='en-US')
         )
-        print(parsed_settings)
 
+        # validate settings
+        if parsed_settings['voice_gender'] not in valid_voice_genders:
+            logger.error(f"voice_gender = {parsed_settings['voice_gender']} in configuration not valid. Setting to {valid_voice_genders[0]}")
+            parsed_settings['voice_gender'] = valid_voice_genders[0]
+
+        if parsed_settings['voice_lang'] not in valid_voice_langs:
+            logger.error(f"voice_lang = {parsed_settings['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
+            parsed_settings['voice_lang'] = valid_voice_langs[0]
+
+        print(parsed_settings)
 
 def main():
     # TODO: add button press event to call visualize
