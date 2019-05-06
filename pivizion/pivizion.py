@@ -18,13 +18,16 @@ else:
     is_pi = False
 
 
-logger = logging.getLogger(__name__)
-def init_logger():
+logger = logging.getLogger("pivizion")
+def init_logger(filename=None):
     """
     Initialize logger.
     """
     logger.setLevel(logging.INFO)
-    logging.basicConfig(filename='pivizion.log')
+    if filename:
+        logging.basicConfig(filename=filename)
+    else:
+        logging.basicConfig()
     logging.captureWarnings(True)
 
 
@@ -35,7 +38,6 @@ class PiVizion(object):
         - Captures image, analyzes image for labels and text,
         creates audio of image analysis, plays audio file.
         """
-        init_logger()
         currentDT = datetime.datetime.now().strftime('%a, %b %d, %Y - %I:%M:%S %p')
         logger.info("Visualize Action Triggered at {currentDT}")
 
@@ -154,9 +156,10 @@ def parse_config():
             logger.error(f"voice_lang = {parsed_settings['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
             parsed_settings['voice_lang'] = valid_voice_langs[0]
 
-        print(parsed_settings)
+        logger.info(f"Added configuration settings from config file.\n{parsed_settings}")
 
 def main():
+    init_logger()
     # TODO: add button press event to call visualize
     #test = PiVizion()
     #test.visualize()
