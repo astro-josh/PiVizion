@@ -3,5 +3,3 @@ google-cloud-vision
 google-cloud-texttospeech
 opencv-python
 playsound
-
-#PyObjC PyObjC-core
