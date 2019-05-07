@@ -2,6 +2,7 @@ import os
 import io
 import logging
 import datetime
+import argparse
 import configparser
 
 from playsound import playsound
@@ -165,11 +166,18 @@ def parse_config(filename=None):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', default=None, dest='config_path',
+                        help='Path to config file.')
+    args = parser.parse_args()
+
     init_logger()
+
+    parse_config(args.config_path)
+
     # TODO: add button press event to call visualize
     #test = PiVizion()
     #test.visualize()
-    parse_config()
 
 
 if (__name__ == '__main__'):
