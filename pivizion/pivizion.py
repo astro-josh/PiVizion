@@ -120,7 +120,8 @@ class PiVizion(object):
             synthesis_input = texttospeech.types.SynthesisInput(text=text)
 
             voice = texttospeech.types.VoiceSelectionParams(
-                language_code='en-US',
+                #language_code='en-US',
+                language_code=self.config['voice_lang']
                 ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
 
             audio_config = texttospeech.types.AudioConfig(
@@ -159,8 +160,8 @@ def parse_config(filename=None):
         configuration = dict(
             text_recognition = settings.getboolean('text_recognition', fallback=True),
             label_recognition = settings.getboolean('label_recognition', fallback=True),
-            voice_gender = settings.get('voice_gender', fallback='FEMALE').upper(),
-            voice_lang = settings.get('voice_lang', fallback='en-US')
+            voice_gender = settings.get('voice_gender', fallback=valid_voice_genders[0]).upper(),
+            voice_lang = settings.get('voice_lang', fallback=valid_voice_langs[0])
         )
 
         # validate settings
