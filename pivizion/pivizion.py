@@ -20,13 +20,13 @@ else:
 
 
 logger = logging.getLogger("pivizion")
-def init_logger(filename=None):
+def init_logger(log_to_file=None):
     """
     Initialize logger.
     """
     logger.setLevel(logging.INFO)
-    if filename:
-        logging.basicConfig(filename=filename)
+    if log_to_file:
+        logging.basicConfig(filename='pivizion.log')
     else:
         logging.basicConfig()
     logging.captureWarnings(True)
@@ -141,10 +141,12 @@ def parse_config(filename=None):
 
     config = configparser.ConfigParser()
     if not filename:
-        filename = "../setup.cfg"
+        print('not filename')
+        filename = "pivizion/config.ini"
     config.read(filename)
 
     if 'pivizion' in config:
+        print('pivizion config detected')
         settings = config['pivizion']
         parsed_settings = dict(
             text_recognition = settings.getboolean('text_recognition', fallback=True),
@@ -171,10 +173,11 @@ def main():
                         help='Path to config file.')
     parser.add_argument('--test', '-t', default=False, action='store_true',
                         dest='is_test', help='Specify test.')
+    parser.add_argument('--log', '-l', default=False, action='store_true',
+                        dest='log_to_file', help='Log to file.')
     args = parser.parse_args()
 
-    init_logger()
-
+    init_logger(log_to_file=args.log_to_file)
     parse_config(filename=args.config_path)
 
     # TODO: add button press event to call visualize
