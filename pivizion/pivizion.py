@@ -141,14 +141,19 @@ def parse_config(filename=None):
 
     config = configparser.ConfigParser()
     if not filename:
-        print('not filename')
         filename = "config.ini"
     config.read(filename)
 
+    configuration = dict(
+        text_recognition = True,
+        label_recognition = True,
+        voice_gender = 'FEMALE',
+        voice_lang = 'en-US'
+    )
+
     if 'pivizion' in config:
-        print('pivizion config detected')
         settings = config['pivizion']
-        parsed_settings = dict(
+        configuration = dict(
             text_recognition = settings.getboolean('text_recognition', fallback=True),
             label_recognition = settings.getboolean('label_recognition', fallback=True),
             voice_gender = settings.get('voice_gender', fallback='FEMALE').upper(),
@@ -156,15 +161,19 @@ def parse_config(filename=None):
         )
 
         # validate settings
-        if parsed_settings['voice_gender'] not in valid_voice_genders:
-            logger.error(f"voice_gender = {parsed_settings['voice_gender']} in configuration not valid. Setting to {valid_voice_genders[0]}")
-            parsed_settings['voice_gender'] = valid_voice_genders[0]
+        if configuration['voice_gender'] not in valid_voice_genders:
+            logger.error(f"voice_gender = {configuration['voice_gender']} in configuration not valid. Setting to {valid_voice_genders[0]}")
+            configuration['voice_gender'] = valid_voice_genders[0]
 
-        if parsed_settings['voice_lang'] not in valid_voice_langs:
-            logger.error(f"voice_lang = {parsed_settings['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
-            parsed_settings['voice_lang'] = valid_voice_langs[0]
+        if configuration['voice_lang'] not in valid_voice_langs:
+            logger.error(f"voice_lang = {configuration['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
+            configuration['voice_lang'] = valid_voice_langs[0]
 
-        logger.info(f"Added configuration settings from config file.\n{parsed_settings}")
+        logger.info(f"Added configuration settings from config file.\n{configuration}")
+    else:
+        logger.info(f"Using default config.\n {configuration}")
+
+    return configuration
 
 
 def main():
