@@ -94,11 +94,13 @@ class PiVizion(object):
 
             image = types.Image(content=content)
 
-            labels_response = client.label_detection(image=image)
-            labels = labels_response.label_annotations
+            if self.config['label_recognition']:
+                labels_response = client.label_detection(image=image)
+                labels = labels_response.label_annotations
 
-            text_response = client.text_detection(image=image)
-            texts = text_response.text_annotations
+            if self.config['text_recognition']:
+                text_response = client.text_detection(image=image)
+                texts = text_response.text_annotations
 
             if labels:
                 logger.info(f'Labels: {labels[0].description}')
