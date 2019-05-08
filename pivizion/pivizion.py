@@ -142,7 +142,7 @@ def parse_config(filename=None):
     config = configparser.ConfigParser()
     if not filename:
         print('not filename')
-        filename = "pivizion/config.ini"
+        filename = "config.ini"
     config.read(filename)
 
     if 'pivizion' in config:
