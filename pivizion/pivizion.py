@@ -33,6 +33,9 @@ def init_logger(log_to_file=None):
 
 
 class PiVizion(object):
+    def __init__(self, configuration):
+        self.config = configuration
+
     def visualize(self):
         """
         Process for visualizing an image.
@@ -187,10 +190,10 @@ def main():
     args = parser.parse_args()
 
     init_logger(log_to_file=args.log_to_file)
-    parse_config(filename=args.config_path)
+    configuration = parse_config(filename=args.config_path)
 
     # TODO: add button press event to call visualize
-    #test = PiVizion()
+    test = PiVizion(configuration)
     #test.visualize()
 
 
