@@ -169,11 +169,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default=None, dest='config_path',
                         help='Path to config file.')
+    parser.add_argument('--test', '-t', default=False, action='store_true',
+                        dest='is_test', help='Specify test.')
     args = parser.parse_args()
 
     init_logger()
 
-    parse_config(args.config_path)
+    parse_config(filename=args.config_path)
 
     # TODO: add button press event to call visualize
     #test = PiVizion()
