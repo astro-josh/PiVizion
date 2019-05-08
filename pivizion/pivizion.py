@@ -88,6 +88,7 @@ class PiVizion(object):
         """
         if image_name:
             client = vision.ImageAnnotatorClient()
+            labels = texts = None
 
             with io.open(image_name, 'rb') as image_file:
                 content = image_file.read()
