@@ -197,8 +197,8 @@ def main():
     configuration = parse_config(filename=args.config_path)
 
     # TODO: add button press event to call visualize
-    test = PiVizion(configuration)
-    #test.visualize()
+    pivizion = PiVizion(configuration)
+    #pivizion.visualize()
 
 
 if (__name__ == '__main__'):
