@@ -137,6 +137,7 @@ class PiVizion(object):
                 logger.info(f"Audio written to {audio_out_name}")
 
             playsound(audio_out_name)
+            os.remove(audio_out_name)
 
 
 def parse_config(filename=None):
