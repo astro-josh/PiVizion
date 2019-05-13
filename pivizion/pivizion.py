@@ -175,7 +175,7 @@ def parse_config(filename=None):
             logger.error(f"voice_gender = {configuration['voice_gender']} in configuration not valid. Setting to {valid_voice_genders[0]}")
             configuration['voice_gender'] = valid_voice_genders["FEMALE"]
         else:
-            configuration['voice_gender'] = valid_voice_genders[configuration["voice_gender"]]
+            configuration['voice_gender'] = valid_voice_genders.get(configuration["voice_gender"])
 
         if configuration['voice_lang'] not in valid_voice_langs:
             logger.error(f"voice_lang = {configuration['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
