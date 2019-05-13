@@ -46,10 +46,14 @@ class PiVizion(object):
         logger.info("Visualize Action Triggered at {currentDT}")
 
         image_name = self.get_image()
-        result = self.analyze_image(image_name)
-        text = f"{result['labels'][0].description if result['labels'] else 'No labels'}\n{result['texts'][0].description if result['texts'] else 'No Text'}"
-        logger.info(f"Generated Text:\n{text}")
-        self.speak(text)
+
+        if not self.config['is_test']:
+            result = self.analyze_image(image_name)
+            text = f"{result['labels'][0].description if result['labels'] else 'No labels'}\n{result['texts'][0].description if result['texts'] else 'No Text'}"
+            logger.info(f"Generated Text:\n{text}")
+            self.speak(text)
+        else:
+            logger.info('Test flag set, not analyzing image.')
 
 
     def get_image(self):
@@ -140,7 +144,7 @@ class PiVizion(object):
             os.remove(audio_out_name)
 
 
-def parse_config(filename=None):
+def parse_config(filename=None, is_test=False):
     """
     Parse and validate config settings from a file.
     """
@@ -151,14 +155,15 @@ def parse_config(filename=None):
 
     config = configparser.ConfigParser()
     if not filename:
-        filename = "config.ini"
+        filename = "pivizion/config.ini"
     config.read(filename)
 
     configuration = dict(
         text_recognition = True,
         label_recognition = True,
         voice_gender = valid_voice_genders['FEMALE'],
-        voice_lang = valid_voice_langs[0]
+        voice_lang = valid_voice_langs[0],
+        is_test = False
     )
 
     if 'pivizion' in config:
@@ -167,7 +172,8 @@ def parse_config(filename=None):
             text_recognition = settings.getboolean('text_recognition', fallback=True),
             label_recognition = settings.getboolean('label_recognition', fallback=True),
             voice_gender = settings.get('voice_gender', fallback="FEMALE").upper(),
-            voice_lang = settings.get('voice_lang', fallback=valid_voice_langs[0])
+            voice_lang = settings.get('voice_lang', fallback=valid_voice_langs[0]),
+            is_test = settings.getboolean('is_test', fallback=False)
         )
 
         # validate settings
@@ -181,9 +187,15 @@ def parse_config(filename=None):
             logger.error(f"voice_lang = {configuration['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
             configuration['voice_lang'] = valid_voice_langs[0]
 
-        logger.info(f"Added configuration settings from config file.\n{configuration}")
+        logger.info(f"Added configuration settings from config file {filename}.")
     else:
-        logger.info(f"Using default config.\n{configuration}")
+        logger.info(f"Using default config.")
+
+    # override config if command line test arg is set.
+    if is_test:
+        configuration['is_test'] = True
+
+    logger.info(f"Added configuration settings from config file.\n{configuration}")
 
     return configuration
 
@@ -199,7 +211,7 @@ def main():
     args = parser.parse_args()
 
     init_logger(log_to_file=args.log_to_file)
-    configuration = parse_config(filename=args.config_path)
+    configuration = parse_config(filename=args.config_path, is_test=args.is_test)
 
     # TODO: add button press event to call visualize
     pivizion = PiVizion(configuration)
