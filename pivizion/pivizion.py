@@ -124,9 +124,9 @@ class PiVizion(object):
 
             voice = texttospeech.types.VoiceSelectionParams(
                 #language_code='en-US',
-                language_code=self.config['voice_lang']
-                ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
-
+                language_code=self.config['voice_lang'],
+                #ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+                ssml_gender=self.config['voice_gender'])
             audio_config = texttospeech.types.AudioConfig(
                 audio_encoding=texttospeech.enums.AudioEncoding.MP3)
 
@@ -144,7 +144,9 @@ def parse_config(filename=None):
     """
     Parse and validate config settings from a file.
     """
-    valid_voice_genders = ("FEMALE", "MALE", "NEUTRAL")
+    valid_voice_genders = {"FEMALE":texttospeech.enums.SsmlVoiceGender.FEMALE,
+                            "MALE":texttospeech.enums.SsmlVoiceGender.MALE,
+                            "NEUTRAL":texttospeech.enums.SsmlVoiceGender.NEUTRAL}
     valid_voice_langs = ("en-US", "en-UK")
 
     config = configparser.ConfigParser()
@@ -155,8 +157,8 @@ def parse_config(filename=None):
     configuration = dict(
         text_recognition = True,
         label_recognition = True,
-        voice_gender = 'FEMALE',
-        voice_lang = 'en-US'
+        voice_gender = valid_voice_genders['FEMALE'],
+        voice_lang = valid_voice_langs[0]
     )
 
     if 'pivizion' in config:
@@ -164,14 +166,16 @@ def parse_config(filename=None):
         configuration = dict(
             text_recognition = settings.getboolean('text_recognition', fallback=True),
             label_recognition = settings.getboolean('label_recognition', fallback=True),
-            voice_gender = settings.get('voice_gender', fallback=valid_voice_genders[0]).upper(),
+            voice_gender = settings.get('voice_gender', fallback="FEMALE").upper(),
             voice_lang = settings.get('voice_lang', fallback=valid_voice_langs[0])
         )
 
         # validate settings
         if configuration['voice_gender'] not in valid_voice_genders:
             logger.error(f"voice_gender = {configuration['voice_gender']} in configuration not valid. Setting to {valid_voice_genders[0]}")
-            configuration['voice_gender'] = valid_voice_genders[0]
+            configuration['voice_gender'] = valid_voice_genders["FEMALE"]
+        else:
+            configuration['voice_gender'] = valid_voice_genders[configuration["voice_gender"]]
 
         if configuration['voice_lang'] not in valid_voice_langs:
             logger.error(f"voice_lang = {configuration['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
@@ -179,7 +183,7 @@ def parse_config(filename=None):
 
         logger.info(f"Added configuration settings from config file.\n{configuration}")
     else:
-        logger.info(f"Using default config.\n {configuration}")
+        logger.info(f"Using default config.\n{configuration}")
 
     return configuration
 
