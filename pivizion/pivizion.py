@@ -194,6 +194,7 @@ def parse_config(filename=None, is_test=False):
     # override config if command line test arg is set.
     if is_test:
         configuration['is_test'] = True
+        logger.info('is_test argument overwritten from command line.')
 
     logger.info(f"Added configuration settings from config file.\n{configuration}")
 
