@@ -5,8 +5,6 @@ import datetime
 import argparse
 import configparser
 
-import yappi
-
 from playsound import playsound
 from google.cloud import vision, texttospeech
 from google.cloud.vision import types
@@ -31,7 +29,7 @@ def init_logger(log_to_file=None):
         logging.basicConfig(filename='pivizion.log')
     else:
         logging.basicConfig()
-    #logging.captureWarnings(True)
+    logging.captureWarnings(True)
 
 
 class PiVizion(object):
@@ -216,15 +214,13 @@ def main():
                         dest='log_to_file', help='Log to file.')
     args = parser.parse_args()
 
-    yappi.start()
     init_logger(log_to_file=args.log_to_file)
     configuration = get_config(filename=args.config_path, is_test=args.is_test)
 
     # TODO: add button press event to call visualize
     pivizion = PiVizion(configuration)
     #pivizion.visualize()
-    yappi.get_func_stats().print_all()
-    yappi.get_thread_stats().print_all()
+
 
 if (__name__ == '__main__'):
     main()
