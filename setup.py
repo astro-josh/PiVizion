@@ -34,6 +34,7 @@ setup(
     ],
     package_dir={'pivizion': 'pivizion'},
     include_package_data=True,
+    python_requires='>3.6',
     install_requires=[
     ],
     license='MIT',
@@ -44,7 +45,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
     entry_points = {
