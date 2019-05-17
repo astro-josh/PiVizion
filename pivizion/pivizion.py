@@ -1,5 +1,4 @@
 import os
-import io
 import logging
 import datetime
 import argparse
@@ -9,6 +8,10 @@ from playsound import playsound
 from google.cloud import vision, texttospeech
 from google.cloud.vision import types
 
+VALID_VOICE_GENDERS = {"FEMALE":texttospeech.enums.SsmlVoiceGender.FEMALE,
+                        "MALE":texttospeech.enums.SsmlVoiceGender.MALE,
+                        "NEUTRAL":texttospeech.enums.SsmlVoiceGender.NEUTRAL}
+VALID_VOICE_LANGS = ("en-US", "en-UK")
 
 global is_pi
 if os.uname().sysname == 'raspberrypi':
@@ -94,7 +97,7 @@ class PiVizion(object):
             client = vision.ImageAnnotatorClient()
             labels = texts = None
 
-            with io.open(image_name, 'rb') as image_file:
+            with open(image_name, 'rb') as image_file:
                 content = image_file.read()
 
             image = types.Image(content=content)
@@ -149,16 +152,13 @@ def get_config(filename=None, is_test=False):
     Get configuration settings.
     Return parsed and validated config from file or default.
     """
-    valid_voice_genders = {"FEMALE":texttospeech.enums.SsmlVoiceGender.FEMALE,
-                            "MALE":texttospeech.enums.SsmlVoiceGender.MALE,
-                            "NEUTRAL":texttospeech.enums.SsmlVoiceGender.NEUTRAL}
-    valid_voice_langs = ("en-US", "en-UK")
 
+    # default config
     configuration = dict(
         text_recognition = True,
         label_recognition = True,
-        voice_gender = valid_voice_genders['FEMALE'],
-        voice_lang = valid_voice_langs[0],
+        voice_gender = VALID_VOICE_GENDERS['FEMALE'],
+        voice_lang = VALID_VOICE_LANGS[0],
         is_test = False
     )
 
@@ -176,19 +176,19 @@ def get_config(filename=None, is_test=False):
         configuration['text_recognition'] = settings.getboolean('text_recognition', fallback=True)
         configuration['label_recognition'] = settings.getboolean('label_recognition', fallback=True)
         configuration['voice_gender'] = settings.get('voice_gender', fallback="FEMALE").upper()
-        configuration['voice_lang'] = settings.get('voice_lang', fallback=valid_voice_langs[0])
+        configuration['voice_lang'] = settings.get('voice_lang', fallback=VALID_VOICE_LANGS[0])
         configuration['is_test'] = settings.getboolean('is_test', fallback=False)
 
         # validate settings
-        if configuration['voice_gender'] not in valid_voice_genders:
-            logger.error(f"voice_gender = {configuration['voice_gender']} in configuration not valid. Setting to {valid_voice_genders[0]}")
-            configuration['voice_gender'] = valid_voice_genders["FEMALE"]
+        if configuration['voice_gender'] not in VALID_VOICE_GENDERS:
+            logger.error(f"voice_gender = {configuration['voice_gender']} in configuration not valid. Setting to {VALID_VOICE_GENDERS[0]}")
+            configuration['voice_gender'] = VALID_VOICE_GENDERS["FEMALE"]
         else:
-            configuration['voice_gender'] = valid_voice_genders.get(configuration["voice_gender"])
+            configuration['voice_gender'] = VALID_VOICE_GENDERS.get(configuration["voice_gender"])
 
-        if configuration['voice_lang'] not in valid_voice_langs:
-            logger.error(f"voice_lang = {configuration['voice_lang']} in configuration not valid. Setting to {valid_voice_langs[0]}")
-            configuration['voice_lang'] = valid_voice_langs[0]
+        if configuration['voice_lang'] not in VALID_VOICE_LANGS:
+            logger.error(f"voice_lang = {configuration['voice_lang']} in configuration not valid. Setting to {VALID_VOICE_LANGS[0]}")
+            configuration['voice_lang'] = VALID_VOICE_LANGS[0]
 
         logger.info(f"Added configuration settings from config file {filename}.")
     else:
